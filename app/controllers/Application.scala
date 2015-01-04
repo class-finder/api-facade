@@ -15,17 +15,21 @@ object Application extends Controller {
     Ok(views.html.index("Your new application is ready."))
   }
 
-  def indexStudios = Action.async {
+  private def OkCORS[C](content: C)(implicit writeable : play.api.http.Writeable[C]): Result = {
+    Ok(content).withHeaders("Access-Control-Allow-Origin" -> "*")
+  }
+
+  def indexStudios = Action.async { req =>
     val holder : WSRequestHolder = WS.url(svcStudio + "/studios")
     holder.get().map { response =>
-      Ok(response.json)
+      OkCORS(response.json)
     }
   }
 
   def indexEvents = Action.async {
     val holder : WSRequestHolder = WS.url(svcEvent + "/events")
     holder.get().map { response =>
-      Ok(response.json)
+      OkCORS(response.json)
     }
   }
 
